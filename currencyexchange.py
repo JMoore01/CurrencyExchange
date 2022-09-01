@@ -33,6 +33,7 @@ def get_input():
         #TO DO: What action next?
 
 # TO DO call function to show conversion rate do_conversion()
+    do_conversion(first_code,second_code)
         
 def check_code(code_to_check): #check the user input to see if it exists in the response
     if code_to_check in data['symbols']:
@@ -42,8 +43,17 @@ def check_code(code_to_check): #check the user input to see if it exists in the 
         print('Key was NOT found')
         return False
 
-# def do_conversion(): 
-    #TO DO: Pass in both country codes and return the conversion rate
+def do_conversion(first_code,second_code): 
+    params = {'from': first_code, 'to': second_code}
+    url = 'https://api.exchangerate.host/convert'
+
+    response = requests.get(url, params=params)
+    data = response.json()
+    data.pop('motd')
+    # print(response.url)
+    # pprint.pprint(data)
+    conversion_rate = (data['result'])
+    print("The conversion rate from %s to %s is %s" % (first_code,second_code,conversion_rate))
 
 if __name__ == "__main__":
     os.system('cls')
