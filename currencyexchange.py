@@ -1,3 +1,4 @@
+from errno import EUSERS
 import requests
 import pprint
 import os
@@ -23,7 +24,9 @@ def do_conversion(first_code,second_code): # Take the two country codes and pass
     data = response.json()
     data.pop('motd')
     conversion_rate = (data['result'])
-    print("The conversion rate from %s to %s is %s" % (first_code.upper(),second_code.upper(),conversion_rate))
+    print("The conversion rate from %s to %s is %s" % (first_code.upper(),second_code.upper(),"{:.2f}".format(conversion_rate)))
+    # print("The conversion rate from %s to %s is %s" % (first_code.upper(),second_code.upper(),conversion_rate))
+    # print("{:.2f}".format(conversion_rate))
 
 if __name__ == "__main__":
     os.system('cls')
@@ -46,15 +49,15 @@ if __name__ == "__main__":
             else:
                 print('That country code was not found')
                 continue
-                
-        second_code = input('\nEnter the second 3-letter country code:\n')
-        if check_code(country_codes,second_code.upper()):
-            do_conversion(first_code,second_code)
-            break
-        else:
-            print('The second counttry code was NOT found')
-            user_continue = input("\nWould you like to try again? (y/n)?")
-            if(user_continue.lower() == 'y'):
-                continue
+        while(True):
+            second_code = input('\nEnter the second 3-letter country code:\n')
+            if check_code(country_codes,second_code.upper()):
+                do_conversion(first_code,second_code)
+                break
             else:
-                sys.exit(0)
+                print('The second country code was NOT found')
+                user_continue = input("\nWould you like to try again? (y/n)?\n")
+                if(user_continue.lower() == 'y'):
+                    continue
+                else:
+                    sys.exit(0)
