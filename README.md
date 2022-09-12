@@ -12,8 +12,8 @@ The purpose of this script was for me to practice python and working with REST A
 * Take user input of a country code and verify that it exists in the AP
 * Take user input of a second country code and validate it
 * Give user an option to display the available country codes
-* Handle the case of the user input
-* Take the two inputs and display the conversion rate between their crespective currencies
+* Handle user input wuth case insensitivity
+* Take the two inputs and display the conversion rate between their respective currencies
 * Handle malformed input gracefully
 * Handle invalid country codes gracefully
-* Handle HTTP response errors
+* Handle HTTP response errors - TO DO
