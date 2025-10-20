@@ -3,58 +3,58 @@ import pprint
 import os
 import sys
 
-def get_codes(): # this gets the list of country code symbols that are available from this API
-    url = 'https://api.exchangerate.host/symbols'
+# === CHANGED: Now uses Frankfurter API (no API key needed) ===
+def get_codes():
+    url = 'https://api.frankfurter.app/currencies'
     response = requests.get(url)
     data = response.json()
-    return data
-      
-def check_code(country_codes,code_to_check): # check that the user input exists in the list of country codes
-    if code_to_check in country_codes['symbols']:
-        return True
-    else:
-        return False
+    return {'symbols': data}  # match original structure for compatibility
 
-def do_conversion(first_code,second_code): # Take the two country codes and pass them to the convert API
-    params = {'from': first_code, 'to': second_code}
-    url = 'https://api.exchangerate.host/convert'
+# === SAME FUNCTION, small safety tweak ===
+def check_code(country_codes, code_to_check):
+    symbols = country_codes.get('symbols', {})
+    return code_to_check.upper() in symbols
 
+# === CHANGED: Now uses Frankfurter API endpoint for conversion ===
+def do_conversion(first_code, second_code):
+    url = 'https://api.frankfurter.app/latest'
+    params = {'from': first_code.upper(), 'to': second_code.upper()}
     response = requests.get(url, params=params)
     data = response.json()
-    data.pop('motd')
-    conversion_rate = (data['result'])
-    print("The conversion rate from %s to %s is %s" % (first_code.upper(),second_code.upper(),conversion_rate))
+    rate = data.get('rates', {}).get(second_code.upper())
+
+    if rate:
+        print(f"The conversion rate from {first_code.upper()} to {second_code.upper()} is {rate}")
+    else:
+        print("Conversion not available for those currencies.")
 
 if __name__ == "__main__":
-    os.system('cls')
+    os.system('cls' if os.name == 'nt' else 'clear')
     country_codes = get_codes()
-    print('This script will take two country codes as input and display the currency conversion rate. \n')
+    print('This script will take two country codes as input and display the currency conversion rate.\n')
 
-    while(True):
+    while True:
         first_code = input('\nPlease enter the first 3-letter country code. Type (l) for a (l)ist of codes (Warning: long). (q) to (q)uit:\n')
-        if (first_code == 'l'):
-            country_codes.pop('motd') 
-            country_codes.pop('success')
-            pprint.pprint(country_codes)
+
+        if first_code.lower() == 'l':
+            pprint.pprint(country_codes['symbols'])
             continue
-        elif (first_code == 'q'):
+        elif first_code.lower() == 'q':
             print('Exiting')
             sys.exit(0)
         else:
-            if check_code(country_codes,first_code.upper()):
-                pass
-            else:
+            if not check_code(country_codes, first_code):
                 print('That country code was not found')
                 continue
                 
         second_code = input('\nEnter the second 3-letter country code:\n')
-        if check_code(country_codes,second_code.upper()):
-            do_conversion(first_code,second_code)
+        if check_code(country_codes, second_code):
+            do_conversion(first_code, second_code)
             break
         else:
-            print('The second counttry code was NOT found')
-            user_continue = input("\nWould you like to try again? (y/n)?")
-            if(user_continue.lower() == 'y'):
+            print('The second country code was NOT found')
+            user_continue = input("\nWould you like to try again? (y/n)? ")
+            if user_continue.lower() == 'y':
                 continue
             else:
                 sys.exit(0)
