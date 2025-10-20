@@ -10,7 +10,6 @@ def get_codes():
     data = response.json()
     return {'symbols': data}  # match original structure for compatibility
 
-# === SAME FUNCTION, small safety tweak ===
 def check_code(country_codes, code_to_check):
     symbols = country_codes.get('symbols', {})
     return code_to_check.upper() in symbols
