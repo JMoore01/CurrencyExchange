@@ -3,18 +3,16 @@ import pprint
 import os
 import sys
 
-# === CHANGED: Now uses Frankfurter API (no API key needed) ===
 def get_codes():
     url = 'https://api.frankfurter.app/currencies'
     response = requests.get(url)
     data = response.json()
-    return {'symbols': data}  # match original structure for compatibility
+    return {'symbols': data}
 
 def check_code(country_codes, code_to_check):
     symbols = country_codes.get('symbols', {})
     return code_to_check.upper() in symbols
 
-# === CHANGED: Now uses Frankfurter API endpoint for conversion ===
 def do_conversion(first_code, second_code):
     url = 'https://api.frankfurter.app/latest'
     params = {'from': first_code.upper(), 'to': second_code.upper()}
@@ -23,9 +21,9 @@ def do_conversion(first_code, second_code):
     rate = data.get('rates', {}).get(second_code.upper())
 
     if rate:
-        print(f"The conversion rate from {first_code.upper()} to {second_code.upper()} is {rate}")
+        print(f"\nThe conversion rate from {first_code.upper()} to {second_code.upper()} is {rate}")
     else:
-        print("Conversion not available for those currencies.")
+        print("\nConversion not available for those currencies.")
 
 if __name__ == "__main__":
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -47,13 +45,22 @@ if __name__ == "__main__":
                 continue
                 
         second_code = input('\nEnter the second 3-letter country code:\n')
-        if check_code(country_codes, second_code):
-            do_conversion(first_code, second_code)
-            break
-        else:
+        if not check_code(country_codes, second_code):
             print('The second country code was NOT found')
             user_continue = input("\nWould you like to try again? (y/n)? ")
             if user_continue.lower() == 'y':
                 continue
             else:
                 sys.exit(0)
+        
+        # Perform conversion
+        do_conversion(first_code, second_code)
+
+        # Ask user if they want to do another conversion
+        again = input("\nWould you like to do another conversion? (y/n): ")
+        if again.lower() != 'y':
+            print("Exiting.")
+            sys.exit(0)
+        else:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            continue
